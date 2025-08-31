@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이헌타 - 장비 스탯 계산기</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: linear-gradient(135deg, #4a5568, #2d3748);
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        td:first-child {
+            background: linear-gradient(135deg, #edf2f7, #e2e8f0);
+            font-weight: bold;
+            color: #4a5568;
+        }
+
+        input[type="number"] {
+            width: 70px;
+            padding: 8px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: scale(1.05);
+        }
+
+        input[type="number"]:hover {
+            border-color: #cbd5e0;
+        }
+
+        .total-row {
+            background: linear-gradient(135deg, #48bb78, #38a169) !important;
+            color: white !important;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .total-row td {
+            background: linear-gradient(135deg, #48bb78, #38a169) !important;
+            color: white !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .equipment-type {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7) !important;
+        }
+
+        tr:hover:not(.total-row) {
+            background-color: rgba(102, 126, 234, 0.05);
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+
+        .stats-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #4a5568;
+            text-align: center;
+            padding: 10px;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 8px;
+            border-left: 5px solid #667eea;
+        }
+
+        .bonus-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #fff5f5, #fed7d7);
+            border-radius: 10px;
+            border: 2px solid #fc8181;
+        }
+
+        .bonus-title {
+            color: #c53030;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .bonus-input {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bonus-input label {
+            font-weight: bold;
+            min-width: 80px;
+            color: #c53030;
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(229, 62, 62, 0.4);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>⚔️ 이헌타 - 장비 스탯 계산기(등반용) ⚔️</h1>
+
+    <div class="stats-section">
+        <div class="section-title">🛡️ 기본 스탯</div>
+        <table id="statsTable">
+            <thead>
+            <tr>
+                <th>장비</th>
+                <th>체력</th>
+                <th>받는 데미지 감소</th>
+                <th>회피</th>
+                <th>치명타 확률</th>
+                <th>공격속도</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="equipment-type">
+                <td>⚔️ 무기</td>
+                <td><input type="number" class="stat-input" data-equipment="weapon" data-stat="hp" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="weapon" data-stat="defense" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="weapon" data-stat="dodge" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="weapon" data-stat="crit" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="weapon" data-stat="speed" value="0"></td>
+            </tr>
+            <tr class="equipment-type">
+                <td>📿 목걸이</td>
+                <td><input type="number" class="stat-input" data-equipment="necklace" data-stat="hp" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="necklace" data-stat="defense" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="necklace" data-stat="dodge" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="necklace" data-stat="crit" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="necklace" data-stat="speed" value="0"></td>
+            </tr>
+            <tr class="equipment-type">
+                <td>💍 반지</td>
+                <td><input type="number" class="stat-input" data-equipment="ring" data-stat="hp" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="ring" data-stat="defense" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="ring" data-stat="dodge" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="ring" data-stat="crit" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="ring" data-stat="speed" value="0"></td>
+            </tr>
+            <tr class="equipment-type">
+                <td>🔗 벨트</td>
+                <td><input type="number" class="stat-input" data-equipment="belt" data-stat="hp" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="belt" data-stat="defense" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="belt" data-stat="dodge" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="belt" data-stat="crit" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="belt" data-stat="speed" value="0"></td>
+            </tr>
+            <tr class="equipment-type">
+                <td>👟 신발</td>
+                <td><input type="number" class="stat-input" data-equipment="shoes" data-stat="hp" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="shoes" data-stat="defense" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="shoes" data-stat="dodge" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="shoes" data-stat="crit" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="shoes" data-stat="speed" value="0"></td>
+            </tr>
+            <tr class="equipment-type">
+                <td>🧤 장갑</td>
+                <td><input type="number" class="stat-input" data-equipment="gloves" data-stat="hp" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="gloves" data-stat="defense" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="gloves" data-stat="dodge" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="gloves" data-stat="crit" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="gloves" data-stat="speed" value="0"></td>
+            </tr>
+            <tr class="equipment-type">
+                <td>🛡️ 갑옷</td>
+                <td><input type="number" class="stat-input" data-equipment="armor" data-stat="hp" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="armor" data-stat="defense" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="armor" data-stat="dodge" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="armor" data-stat="crit" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="armor" data-stat="speed" value="0"></td>
+            </tr>
+            <tr class="equipment-type">
+                <td>⛑️ 투구</td>
+                <td><input type="number" class="stat-input" data-equipment="helmet" data-stat="hp" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="helmet" data-stat="defense" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="helmet" data-stat="dodge" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="helmet" data-stat="crit" value="0"></td>
+                <td><input type="number" class="stat-input" data-equipment="helmet" data-stat="speed" value="0"></td>
+            </tr>
+            <tr class="total-row">
+                <td>📊 합계</td>
+                <td id="total-hp">0</td>
+                <td id="total-defense">0</td>
+                <td id="total-dodge">0</td>
+                <td id="total-crit">0</td>
+                <td id="total-speed">0</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="bonus-section">
+        <div class="bonus-title">🎯 추가 옵션</div>
+
+        <div class="bonus-input">
+            <label>🐎 라이딩:</label>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <small style="font-weight: bold; color: #c53030; margin-bottom: 3px;">체력</small>
+                    <input type="number" id="riding-hp" value="0">
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <small style="font-weight: bold; color: #c53030; margin-bottom: 3px;">데미지감소</small>
+                    <input type="number" id="riding-defense" value="0">
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <small style="font-weight: bold; color: #c53030; margin-bottom: 3px;">회피</small>
+                    <input type="number" id="riding-dodge" value="0">
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <small style="font-weight: bold; color: #c53030; margin-bottom: 3px;">치명타</small>
+                    <input type="number" id="riding-crit" value="0">
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <small style="font-weight: bold; color: #c53030; margin-bottom: 3px;">공격속도</small>
+                    <input type="number" id="riding-speed" value="0">
+                </div>
+            </div>
+        </div>
+
+        <div class="bonus-input">
+            <label>🔮 룬:</label>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <small style="font-weight: bold; color: #c53030; margin-bottom: 3px;">체력</small>
+                    <input type="number" id="rune-hp" value="0">
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <small style="font-weight: bold; color: #c53030; margin-bottom: 3px;">데미지감소</small>
+                    <input type="number" id="rune-defense" value="0">
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <small style="font-weight: bold; color: #c53030; margin-bottom: 3px;">회피</small>
+                    <input type="number" id="rune-dodge" value="0">
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <small style="font-weight: bold; color: #c53030; margin-bottom: 3px;">치명타</small>
+                    <input type="number" id="rune-crit" value="0">
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <small style="font-weight: bold; color: #c53030; margin-bottom: 3px;">공격속도</small>
+                    <input type="number" id="rune-speed" value="0">
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+            <h3 style="margin: 0 0 10px 0; color: #2d3748;">🏆 최종 합계 (장비 + 옵션)</h3>
+            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px;">
+                <div><strong>체력:</strong> <span id="final-hp" style="color: #e53e3e; font-size: 1.2em;">0</span></div>
+                <div><strong>데미지감소:</strong> <span id="final-defense" style="color: #3182ce; font-size: 1.2em;">0</span></div>
+                <div><strong>회피:</strong> <span id="final-dodge" style="color: #38a169; font-size: 1.2em;">0</span></div>
+                <div><strong>치명타:</strong> <span id="final-crit" style="color: #d69e2e; font-size: 1.2em;">0</span></div>
+                <div><strong>공격속도:</strong> <span id="final-speed" style="color: #805ad5; font-size: 1.2em;">0</span></div>
+            </div>
+        </div>
+    </div>
+
+    <button class="reset-btn" onclick="resetAllValues()">🔄 모든 값 초기화</button>
+</div>
+
+<script>
+    // 기본 스탯 계산
+    function calculateTotals() {
+        const stats = ['hp', 'defense', 'dodge', 'crit', 'speed'];
+
+        stats.forEach(stat => {
+            let total = 0;
+            const inputs = document.querySelectorAll(`input[data-stat="${stat}"]`);
+            inputs.forEach(input => {
+                total += parseInt(input.value) || 0;
+            });
+            document.getElementById(`total-${stat}`).textContent = total;
+        });
+
+        calculateFinalTotals();
+    }
+
+    // 최종 합계 계산 (장비 + 옵션)
+    function calculateFinalTotals() {
+        const stats = ['hp', 'defense', 'dodge', 'crit', 'speed'];
+
+        stats.forEach(stat => {
+            const equipmentTotal = parseInt(document.getElementById(`total-${stat}`).textContent) || 0;
+            const ridingBonus = parseInt(document.getElementById(`riding-${stat}`).value) || 0;
+            const runeBonus = parseInt(document.getElementById(`rune-${stat}`).value) || 0;
+
+            const finalTotal = equipmentTotal + ridingBonus + runeBonus;
+            document.getElementById(`final-${stat}`).textContent = finalTotal;
+        });
+    }
+
+    // 모든 값 초기화
+    function resetAllValues() {
+        const allInputs = document.querySelectorAll('input[type="number"]');
+        allInputs.forEach(input => {
+            input.value = 0;
+        });
+        calculateTotals();
+    }
+
+    // 이벤트 리스너 추가
+    document.addEventListener('DOMContentLoaded', function() {
+        // 장비 스탯 입력 이벤트
+        const statInputs = document.querySelectorAll('.stat-input');
+        statInputs.forEach(input => {
+            input.addEventListener('input', calculateTotals);
+        });
+
+        // 옵션 입력 이벤트
+        const bonusInputs = document.querySelectorAll('#riding-hp, #riding-defense, #riding-dodge, #riding-crit, #riding-speed, #rune-hp, #rune-defense, #rune-dodge, #rune-crit, #rune-speed');
+        bonusInputs.forEach(input => {
+            input.addEventListener('input', calculateFinalTotals);
+        });
+
+        // 초기 계산
+        calculateTotals();
+    });
+</script>
+</body>
+</html>
