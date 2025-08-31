@@ -165,9 +165,25 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(229, 62, 62, 0.4);
         }
+
+        .hits-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            backdrop-filter: blur(5px);
+        }
     </style>
 </head>
 <body>
+<div class="hits-counter">
+    <a href="https://hits.sh/pjkfckr.github.io/evil_hunter_tycoon_equipment/"><img alt="Hits" src="https://hits.sh/pjkfckr.github.io/evil_hunter_tycoon_equipment.svg?view=today-total"/></a>
+</div>
+
 <div class="container">
     <h1>⚔️ 이헌타 - 장비 스탯 계산기(등반용) ⚔️</h1>
 
@@ -329,6 +345,11 @@
     </div>
 
     <button class="reset-btn" onclick="resetAllValues()">🔄 모든 값 초기화</button>
+</div>
+
+<!-- Hits Counter -->
+<div class="hits-counter">
+    <a href="https://hits.sh/pjkfckr.github.io/evil_hunter_tycoon_equipment/"><img alt="Hits" src="https://hits.sh/pjkfckr.github.io/evil_hunter_tycoon_equipment.svg?view=today-total"/></a>
 </div>
 
 <script>
